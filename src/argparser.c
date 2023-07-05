@@ -140,6 +140,8 @@ void process_rnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **a
 
 void process_pnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **args)
 {
+    (*args)->run_type = PNODE;
+
     if (info->port == -1)
         (*args)->error = "'--process/-p' requires '--port' to be defined";
     else
