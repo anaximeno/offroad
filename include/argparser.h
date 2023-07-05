@@ -3,8 +3,8 @@
 
 /** Defines the spected arguments for the program. */
 typedef struct offroad_cli_args {
-    const char* filename;
-    const char* error;
+    char* filename;
+    char* error;
 } offroad_cli_args;
 
 
