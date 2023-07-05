@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #ifndef _OFFROAD_ARGPARSER
 #define _OFFROAD_ARGPARSER
 
@@ -5,6 +7,7 @@
 typedef struct offroad_cli_args {
     char* filename;
     char* error;
+    FILE* file;
 } offroad_cli_args;
 
 

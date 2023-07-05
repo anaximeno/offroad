@@ -33,6 +33,25 @@ bool validate_args_file(offroad_cli_args** args)
     return false;
 }
 
+bool load_file(offroad_cli_args** args)
+{
+    if (args != NULL && *args != NULL)
+    {
+        (*args)->file = fopen((*args)->filename, "r");
+
+        if ((*args)->file != NULL)
+        {
+            return true;
+        }
+        else
+        {
+            (*args)->error = "File could not be loaded";
+        }
+    }
+
+    return false;
+}
+
 extern offroad_cli_args* parse_args(int argc, char** argv)
 {
     offroad_cli_args* args = (offroad_cli_args*)malloc(sizeof(offroad_cli_args));
@@ -45,7 +64,11 @@ extern offroad_cli_args* parse_args(int argc, char** argv)
         if (argc > 1)
         {
             args->filename = argv[1];
-            validate_args_file(&args);
+
+            if (validate_args_file(&args))
+            {
+                load_file(&args);
+            }
         }
         else
         {
@@ -60,6 +83,12 @@ extern offroad_cli_args* parse_args(int argc, char** argv)
 
 extern void free_args(offroad_cli_args** args)
 {
+    if ((*args)->file != NULL)
+    {
+        fclose((*args)->file);
+    }
+
     free(*args);
+
     *args = NULL;
 }

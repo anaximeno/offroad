@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/offroad.h"
 #include "include/argparser.h"
 #include "include/common.h"
 
@@ -16,7 +17,7 @@ int main(int argc, char** argv)
         }
         else
         {
-            debug_msg(args->filename, INFO);
+            execute_offroad(args);
         }
 
         free_args(&args);
