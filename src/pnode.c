@@ -2,8 +2,13 @@
 
 #include "../include/pnode.h"
 
-void free_pnode_args(struct pnode_args **pnode_args)
+extern int execute_pnode(struct pnode_args* args)
 {
-    free(*pnode_args);
-    *pnode_args = NULL;
+    return 0; // TODO
+}
+
+void free_pnode_args(struct pnode_args **args)
+{
+    free(*args);
+    *args = NULL;
 }

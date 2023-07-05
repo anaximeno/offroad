@@ -5,19 +5,21 @@
 #include "include/argparser.h"
 #include "include/common.h"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    offroad_cli_args* args = parse_args(argc, argv);
+    offroad_cli_args *args = parse_args(argc, argv);
+    int out = 0;
 
     if (args != NULL)
     {
         if (args->error != NULL)
         {
             debug_msg(args->error, ERROR);
+            out = 1;
         }
         else
         {
-            execute_offroad(args);
+            out = execute_offroad(args);
         }
 
         free_args(&args);
@@ -27,5 +29,5 @@ int main(int argc, char** argv)
         debug_msg("Insuficient memory!", CRITICAL);
     }
 
-    return 0;
+    return out;
 }

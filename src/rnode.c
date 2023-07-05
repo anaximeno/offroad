@@ -1,13 +1,21 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/rnode.h"
 
-void free_rnode_args(struct rnode_args** rnode_args)
+extern void free_rnode_args(struct rnode_args** args)
 {
-    if ((*rnode_args)->file != NULL)
+    if ((*args)->file != NULL)
     {
-        fclose((*rnode_args)->file);
+        fclose((*args)->file);
     }
 
-    free(*rnode_args);
+    free(*args);
 
-    *rnode_args = NULL;
+    *args = NULL;
+}
+
+extern int execute_rnode(struct rnode_args* args)
+{
+    return 0;
 }
