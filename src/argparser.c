@@ -25,3 +25,9 @@ extern offroad_cli_args* parse_args(int argc, char** argv)
 
     return NULL;
 }
+
+extern void free_args(offroad_cli_args** args)
+{
+    free(*args);
+    *args = NULL;
+}

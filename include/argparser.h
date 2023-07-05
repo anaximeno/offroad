@@ -11,4 +11,7 @@ typedef struct offroad_cli_args {
 /** Returns the command line arguments for the program. */
 offroad_cli_args* parse_args(int argc, char** argv);
 
+/** Securely frees the args variable. */
+void free_args(offroad_cli_args** args);
+
 #endif

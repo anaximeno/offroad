@@ -18,10 +18,12 @@ int main(int argc, char** argv)
         {
             debug_msg(args->filename, INFO);
         }
+
+        free_args(&args);
     }
     else
     {
-        debug_msg("Unsuficient memory!", CRITICAL);
+        debug_msg("Insuficient memory!", CRITICAL);
     }
 
     return 0;

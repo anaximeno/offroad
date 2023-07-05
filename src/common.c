@@ -20,10 +20,11 @@ char* debug_msg_prefix(offroad_debug_level level)
     }
 }
 
-extern void debug_msg(const char* message, offroad_debug_level level)
+extern void debug_msg(const char* msg, offroad_debug_level level)
 {
     char* pfix = debug_msg_prefix(level);
-    fprintf(stderr, "offroad: %s: %s\n", pfix, message);
+
+    fprintf(level != INFO ? stderr : stdout, "offroad: %s: %s\n", pfix, msg);
 
     if (level == CRITICAL)
     {
