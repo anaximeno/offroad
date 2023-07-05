@@ -2,17 +2,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/stat.h>
+#include <getopt.h>
 
 #include "../include/argparser.h"
 #include "../include/common.h"
 
-bool validate_args_file(offroad_cli_args** args)
+bool validate_args_file(offroad_cli_args **args)
 {
     if (args != NULL && *args != NULL)
     {
         struct stat fs;
 
-        if (stat((*args)->filename, &fs) == -1)
+        if (stat((*args)->to.rnode.filename, &fs) == -1)
         {
             (*args)->error = "File error";
         }
@@ -33,13 +34,13 @@ bool validate_args_file(offroad_cli_args** args)
     return false;
 }
 
-bool load_file(offroad_cli_args** args)
+bool load_file(offroad_cli_args **args)
 {
     if (args != NULL && *args != NULL)
     {
-        (*args)->file = fopen((*args)->filename, "r");
+        (*args)->to.rnode.file = fopen((*args)->to.rnode.filename, "r");
 
-        if ((*args)->file != NULL)
+        if ((*args)->to.rnode.file != NULL)
         {
             return true;
         }
@@ -52,27 +53,90 @@ bool load_file(offroad_cli_args** args)
     return false;
 }
 
-extern offroad_cli_args* parse_args(int argc, char** argv)
+void parse_commands(int argc, char **argv, offroad_cli_args **args)
 {
-    offroad_cli_args* args = (offroad_cli_args*)malloc(sizeof(offroad_cli_args));
+    if (argc == 1)
+    {
+        (*args)->error = "No arguments were provided";
+        return;
+    }
+
+    int c, option_index;
+
+    static struct option long_options[] = {
+        {"rnode", required_argument, 0, 'r'},
+        {"pnode", required_argument, 0, 'p'}};
+
+    while (true)
+    {
+        option_index = 0;
+
+        c = getopt_long(argc, argv, "p:r:", long_options, &option_index);
+
+        if (c == -1)
+        {
+            break;
+        }
+
+        switch (c)
+        {
+        case 'r': /* R NODE*/
+            (*args)->run_type = RNODE;
+            (*args)->to.rnode.filename = optarg;
+            break;
+
+        case 'p': /* P NODE*/
+            (*args)->run_type = PNODE;
+            (*args)->to.pnode.port = atoi(optarg);
+            break;
+
+        case '?':
+            break;
+
+        default:
+            (*args)->error = "Argument parsing error";
+            break;
+        }
+    }
+}
+
+void prepare_pnode_args(offroad_cli_args **args)
+{
+    // TODO
+}
+
+void prepare_rnode_args(offroad_cli_args **args)
+{
+    (*args)->to.rnode.file = NULL;
+
+    if (validate_args_file(&args))
+    {
+        load_file(&args);
+    }
+}
+
+extern offroad_cli_args *parse_args(int argc, char **argv)
+{
+    offroad_cli_args *args = (offroad_cli_args *)malloc(sizeof(offroad_cli_args));
 
     if (args != NULL)
     {
-        args->filename = NULL;
-        args->error = NULL;
+        parse_commands(argc, argv, &args);
 
-        if (argc > 1)
+        if (args->error == NULL)
         {
-            args->filename = argv[1];
-
-            if (validate_args_file(&args))
+            if (args->run_type == RNODE)
             {
-                load_file(&args);
+                prepare_rnode_args(&args);
             }
-        }
-        else
-        {
-            args->error = "File not provided";
+            else if (args->run_type == PNODE)
+            {
+                prepare_pnode_args(&args);
+            }
+            else
+            {
+                args->error = "Unknown parse run type state";
+            }
         }
 
         return args;
@@ -81,11 +145,11 @@ extern offroad_cli_args* parse_args(int argc, char** argv)
     return NULL;
 }
 
-extern void free_args(offroad_cli_args** args)
+extern void free_args(offroad_cli_args **args)
 {
-    if ((*args)->file != NULL)
+    if ((*args)->run_type == RNODE && (*args)->to.rnode.file != NULL)
     {
-        fclose((*args)->file);
+        fclose((*args)->to.rnode.file);
     }
 
     free(*args);

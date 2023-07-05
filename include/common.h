@@ -9,6 +9,12 @@ typedef enum offroad_debug_level
     CRITICAL
 } offroad_debug_level;
 
-void debug_msg(const char* message, offroad_debug_level level);
+typedef enum offroad_run_type
+{
+    PNODE,
+    RNODE
+} offroad_run_type;
+
+void debug_msg(const char *message, offroad_debug_level level);
 
 #endif
