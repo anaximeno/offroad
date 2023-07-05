@@ -126,16 +126,14 @@ void process_rnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **a
         (*args)->to.rnode.filename = info->filename;
         (*args)->to.rnode.ip_address = info->ip_address;
         (*args)->to.rnode.port = info->port;
-
         (*args)->to.rnode.file = NULL;
+
         if (validate_args_file((*args)->to.rnode.filename, args))
         {
             (*args)->to.rnode.file = fopen((*args)->to.rnode.filename, "r");
 
             if ((*args)->to.rnode.file == NULL)
-            {
                 (*args)->error = "File could not be loaded";
-            }
         }
     }
 }
@@ -171,7 +169,6 @@ extern offroad_cli_args *parse_args(int argc, char **argv)
         args->run_type = NONE;
 
         offroad_cli_parse_info *info = NULL;
-
         info = parse_commands(argc, argv, &args);
 
         if (args->error == NULL && info != NULL)
@@ -186,9 +183,7 @@ extern offroad_cli_args *parse_args(int argc, char **argv)
 extern void free_args(offroad_cli_args **args)
 {
     if ((*args)->run_type == RNODE && (*args)->to.rnode.file != NULL)
-    {
         fclose((*args)->to.rnode.file);
-    }
 
     free(*args);
     *args = NULL;
