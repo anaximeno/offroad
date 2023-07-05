@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -fPIC -g
 
-SRC_FILES = src/argparser.c src/common.c src/offroad.c
-OBJS = argparser.o common.o offroad.o
+SRC_FILES = src/argparser.c src/common.c src/offroad.c src/pnode.c src/rnode.c
+OBJS = argparser.o common.o offroad.o pnode.o rnode.o
 
 OUT = offroad
 

@@ -5,6 +5,8 @@
 #include <getopt.h>
 
 #include "../include/argparser.h"
+#include "../include/pnode.h"
+#include "../include/rnode.h"
 #include "../include/common.h"
 
 bool validate_args_file(offroad_cli_args **args)
@@ -98,6 +100,13 @@ void parse_commands(int argc, char **argv, offroad_cli_args **args)
             break;
         }
     }
+
+    if (optind < argc)
+    {
+        // TODO: improve here, the unknown arguments are from
+        // optind to argc
+        (*args)->error = "Unknow argmuent";
+    }
 }
 
 void prepare_pnode_args(offroad_cli_args **args)
@@ -109,9 +118,9 @@ void prepare_rnode_args(offroad_cli_args **args)
 {
     (*args)->to.rnode.file = NULL;
 
-    if (validate_args_file(&args))
+    if (validate_args_file(args))
     {
-        load_file(&args);
+        load_file(args);
     }
 }
 

@@ -9,4 +9,6 @@ struct rnode_args
     FILE *file;
 };
 
+void free_rnode_args(struct rnode_args** rnode_args);
+
 #endif
