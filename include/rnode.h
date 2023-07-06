@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#include "common.h"
+
 struct rnode_args
 {
     char *filename;
@@ -11,7 +13,7 @@ struct rnode_args
     int port;
 };
 
-int execute_rnode(struct rnode_args *args);
+offroad_func_result* execute_rnode(struct rnode_args *args);
 
 void free_rnode_args(struct rnode_args **rnode_args);
 

@@ -7,19 +7,26 @@
 
 int main(int argc, char **argv)
 {
+    int output = 0;
+
+    offroad_func_result *res = NULL;
+
     offroad_cli_args *args = parse_args(argc, argv);
-    int out = 0;
 
     if (args != NULL)
     {
         if (args->error != NULL)
-        {
             debug_msg(args->error, ERROR);
-            out = 1;
-        }
         else
+            res = execute_offroad(args);
+
+        if (res != NULL && res->status != 0)
         {
-            out = execute_offroad(args);
+            output = res->status;
+            debug_msg(res->error, res->dbg_level);
+
+            free(res);
+            res = NULL;
         }
 
         free_args(&args);
@@ -29,5 +36,5 @@ int main(int argc, char **argv)
         debug_msg("Insuficient memory!", CRITICAL);
     }
 
-    return out;
+    return output;
 }

@@ -7,29 +7,22 @@
 #include "../include/pnode.h"
 #include "../include/rnode.h"
 
-int execute_offroad(offroad_cli_args *args)
+offroad_func_result *execute_offroad(offroad_cli_args *args)
 {
     if (args->error != NULL)
     {
-        debug_msg(args->error, ERROR);
-        return 1;
+        return create_result(1, args->error, ERROR);
     }
 
     switch (args->run_type)
     {
     case RNODE:
-        execute_rnode(&args->to.rnode);
-        break;
+        return execute_rnode(&args->to.rnode);
 
     case PNODE:
-        execute_pnode(&args->to.pnode);
-        break;
+        return execute_pnode(&args->to.pnode);
 
     default:
-        args->error = "Unknown run type";
-        debug_msg(args->error, ERROR);
-        return 1;
+        return create_result(1, "Unknown run type", ERROR);
     }
-
-    return 0;
 }
