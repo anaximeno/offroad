@@ -10,9 +10,7 @@
 offroad_func_result *execute_offroad(offroad_cli_args *args)
 {
     if (args->error != NULL)
-    {
         return create_result(1, args->error, ERROR);
-    }
 
     switch (args->run_type)
     {

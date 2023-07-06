@@ -31,9 +31,7 @@ offroad_func_result *write_file(int socketfd)
             n = recv(socketfd, buffer, OFFROAD_BUFFER_LENGHT, 0);
 
             if (n <= 0)
-            {
                 break;
-            }
 
             fprintf(file, "%s", buffer);
             bzero(buffer, OFFROAD_BUFFER_LENGHT);
@@ -57,9 +55,7 @@ extern offroad_func_result *execute_pnode(struct pnode_args *args)
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socketfd == -1)
-    {
         return create_result(1, "Could not create the socket", ERROR);
-    }
 
     bzero(&serveraddr, sizeof(serveraddr));
 

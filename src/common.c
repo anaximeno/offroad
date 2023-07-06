@@ -27,9 +27,7 @@ extern void debug_msg(const char *msg, offroad_debug_level level)
     fprintf(level != INFO ? stderr : stdout, "offroad: %s: %s\n", pfix, msg);
 
     if (level == CRITICAL)
-    {
         exit(1);
-    }
 }
 
 extern offroad_func_result *create_result(int status, char *error, offroad_debug_level level)
