@@ -43,8 +43,8 @@ extern offroad_func_result *execute_rnode(struct rnode_args *args)
         return create_result(1, "Error during the creation of the socket", ERROR);
 
     serveraddr.sin_family = AF_INET;
+    serveraddr.sin_addr.s_addr = inet_addr(args->host);
     serveraddr.sin_port = htons(args->port);
-    serveraddr.sin_addr.s_addr = inet_addr(args->ip_address);
 
     connection = connect(socketfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
 

@@ -18,7 +18,7 @@ offroad_cli_parse_info *create_parse_info()
     {
         info->is_pnode = false;
         info->is_rnode = false;
-        info->ip_address = NULL;
+        info->host = NULL;
         info->filename = NULL;
         info->port = -1;
     }
@@ -67,7 +67,7 @@ offroad_cli_parse_info *parse_commands(int argc, char **argv, offroad_cli_args *
         {"run", required_argument, 0, 'r'},
         {"process", no_argument, 0, 'p'},
         {"port", required_argument, 0, 0},
-        {"ip", required_argument, 0, 0}};
+        {"host", required_argument, 0, 0}};
 
     while (true)
     {
@@ -83,8 +83,8 @@ offroad_cli_parse_info *parse_commands(int argc, char **argv, offroad_cli_args *
         case 0:
             if (strcmp(long_options[option_index].name, "port") == 0)
                 info->port = atoi(optarg);
-            else if (strcmp(long_options[option_index].name, "ip") == 0)
-                info->ip_address = optarg;
+            else if (strcmp(long_options[option_index].name, "host") == 0)
+                info->host = optarg;
             break;
 
         case 'r': /* R NODE*/
@@ -117,14 +117,14 @@ void process_rnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **a
 {
     (*args)->run_type = RNODE;
 
-    if (info->ip_address == NULL || info->port == -1)
+    if (info->host == NULL || info->port == -1)
     {
-        (*args)->error = "'--run/-r' requires '--ip' and '--port' to be defined";
+        (*args)->error = "'--run/-r' requires '--host' and '--port' to be defined";
     }
     else
     {
         (*args)->to.rnode.filename = info->filename;
-        (*args)->to.rnode.ip_address = info->ip_address;
+        (*args)->to.rnode.host = info->host;
         (*args)->to.rnode.port = info->port;
         (*args)->to.rnode.file = NULL;
 

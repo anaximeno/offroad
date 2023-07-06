@@ -7,9 +7,9 @@
 
 struct rnode_args
 {
-    char *filename;
     FILE *file;
-    char *ip_address;
+    char *filename;
+    char *host;
     int port;
 };
 

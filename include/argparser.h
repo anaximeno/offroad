@@ -25,8 +25,8 @@ typedef struct offroad_cli_parse_info
 {
     bool is_rnode;
     bool is_pnode;
-    char* ip_address;
     char* filename;
+    char* host;
     int port;
 } offroad_cli_parse_info;
 
