@@ -7,6 +7,8 @@
 #include "rnode.h"
 #include "pnode.h"
 
+#include "ax-c-common/include/ax-c-common.h"
+
 /** Defines the spected arguments for the program. */
 typedef struct offroad_cli_args
 {
@@ -29,12 +31,12 @@ typedef struct offroad_cli_parse_info
 } offroad_cli_parse_info;
 
 /** Returns the command line arguments for the program. */
-offroad_func_result *parse_args(int argc, char **argv);
+ax_result_p parse_args(int argc, char **argv);
 
 /** Used to create args. */
 offroad_cli_args *create_args();
 
 /** Securely frees the args variable. */
-void free_args(offroad_cli_args **args);
+void *free_args(offroad_cli_args *args);
 
 #endif

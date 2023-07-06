@@ -7,7 +7,9 @@
 #include "../include/pnode.h"
 #include "../include/rnode.h"
 
-offroad_func_result *execute_offroad(offroad_cli_args *args)
+#include "../include/ax-c-common/include/ax-c-common.h"
+
+ax_result_p execute_offroad(offroad_cli_args *args)
 {
     if (args != NULL)
     {
@@ -20,9 +22,9 @@ offroad_func_result *execute_offroad(offroad_cli_args *args)
             return execute_pnode(&args->to.pnode);
 
         default:
-            return err_result(1, "Internal error, run type unknown", WARNING);
+            return ax_result_err(1, "Internal error, run type unknown");
         }
     }
 
-    return err_result(1, "Internal error, got null 'args'", WARNING);
+    return ax_result_err(1, "Internal error, got null 'args'");
 }

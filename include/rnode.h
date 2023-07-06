@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+#include "ax-c-common/include/ax-c-common.h"
 #include "common.h"
 
 struct rnode_args
@@ -13,7 +14,7 @@ struct rnode_args
     int port;
 };
 
-offroad_func_result* execute_rnode(struct rnode_args *args);
+ax_result_p execute_rnode(struct rnode_args *args);
 
 void free_rnode_args(struct rnode_args **rnode_args);
 

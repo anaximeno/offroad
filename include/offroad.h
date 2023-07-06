@@ -4,7 +4,9 @@
 #include "argparser.h"
 #include "common.h"
 
+#include "ax-c-common/include/ax-c-common.h"
+
 /** Executes a file in a remote processor. */
-offroad_func_result* execute_offroad(offroad_cli_args *args);
+ax_result_p execute_offroad(offroad_cli_args *args);
 
 #endif

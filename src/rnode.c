@@ -9,6 +9,8 @@
 #include "../include/rnode.h"
 #include "../include/common.h"
 
+#include "../include/ax-c-common/include/ax-c-common.h"
+
 extern void free_rnode_args(struct rnode_args **args)
 {
     if ((*args)->file != NULL)
@@ -18,34 +20,29 @@ extern void free_rnode_args(struct rnode_args **args)
     *args = NULL;
 }
 
-offroad_func_result *send_file(FILE *file, int socketfd)
+ax_result_p send_file(FILE *file, int socketfd)
 {
     char data[OFFROAD_BUFFER_LENGHT] = {0};
 
     while (fgets(data, OFFROAD_BUFFER_LENGHT, file) != NULL)
     {
         if (send(socketfd, data, sizeof(data), 0) == -1)
-            return err_result(1, "Error while sending the file", ERROR);
+            return ax_result_err(1, "Error while sending the file");
         memset(data, 0, OFFROAD_BUFFER_LENGHT);
     }
 
-    return ok_result(NULL);
+    return ax_result_ok(NULL);
 }
 
-extern offroad_func_result *execute_rnode(struct rnode_args *args)
+extern ax_result_p execute_rnode(struct rnode_args *args)
 {
-    offroad_func_result *res = NULL;
-
     struct sockaddr_in client; // XXX
     int socketfd, connection;
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socketfd == -1)
-    {
-        res = err_result(1, "Error during the creation of the socket", ERROR);
-        goto return_block;
-    }
+        return ax_result_err(1, "Error during the creation of the socket");
 
     struct sockaddr_in serveraddr = {
         .sin_family = AF_INET,
@@ -56,13 +53,12 @@ extern offroad_func_result *execute_rnode(struct rnode_args *args)
 
     if (connection == -1)
     {
-        res = err_result(1, "Could not create a connection to the server", ERROR);
-        goto return_block;
+        close(socketfd);
+        return ax_result_err(1, "Could not create a connection to the server");
     }
 
-    res = send_file(args->file, socketfd);
+    ax_result_p result = send_file(args->file, socketfd);
 
-return_block:
     close(socketfd);
-    return res;
+    return result;
 }

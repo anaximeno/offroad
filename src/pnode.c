@@ -14,13 +14,15 @@
 #include "../include/pnode.h"
 #include "../include/common.h"
 
+#include "../include/ax-c-common/include/ax-c-common.h"
+
 extern void free_pnode_args(struct pnode_args **args)
 {
     free(*args);
     *args = NULL;
 }
 
-offroad_func_result *write_file(int socketfd)
+ax_result_p write_file(int socketfd)
 {
     char buffer[OFFROAD_BUFFER_LENGHT] = {0};
     int n;
@@ -29,7 +31,7 @@ offroad_func_result *write_file(int socketfd)
 
     if (file != NULL)
     {
-        debug_msg("Receiving the file...", INFO);
+        ax_log(INFO, "Receiving the file...");
 
         while (true)
         {
@@ -44,50 +46,46 @@ offroad_func_result *write_file(int socketfd)
         }
 
         fclose(file);
-        debug_msg("File received", INFO);
-        return ok_result(NULL);
+        ax_log(INFO, "File received");
+        return ax_result_ok(NULL);
     }
     else
     {
-        return err_result(1, "Could not transfer the file from the client", ERROR);
+        return ax_result_err(1, "Could not transfer the file from the client");
     }
 }
 
-offroad_func_result *execute_file(const char *filename)
+ax_result_p execute_file(const char *filename)
 {
     struct stat fs;
 
     if (stat(filename, &fs) == -1)
-        return err_result(errno, "Couldn't get the status of the file", ERROR);
+        return ax_result_err(errno, "Couldn't get the status of the file");
     else if (!S_ISREG(fs.st_mode))
-        return err_result(1, "File can't be handled regularly", ERROR);
+        return ax_result_err(1, "File can't be handled regularly");
     else if (chmod(filename, S_IRWXU | S_IROTH) == -1)
-        return err_result(errno, "Can't set execute permission on the run file", ERROR);
+        return ax_result_err(errno, "Can't set execute permission on the run file");
 
-    // debug_msg("Executing the file...", INFO); // TODO
+    ax_log(INFO, "Executing the received file...");
+    // TODO
 
     // execv(filename) // TODO
 
-    return ok_result(NULL);
+    return ax_result_ok(NULL);
 }
 
-extern offroad_func_result *execute_pnode(struct pnode_args *args)
+extern ax_result_p execute_pnode(struct pnode_args *args)
 {
-    offroad_func_result *res = NULL;
-
     struct sockaddr_in client, serveraddr;
     int socketfd, connection, bind_status, connection_status;
     socklen_t length;
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    debug_msg("Initializing the socket...", INFO);
+    ax_log(INFO, "Initializing the socket...");
 
     if (socketfd == -1)
-    {
-        res = err_result(errno, "Could not create the socket", ERROR);
-        goto return_block;
-    }
+        return ax_result_err(errno, "Could not create the socket");
 
     memset(&client, 0, sizeof(client));
     memset(&serveraddr, 0, sizeof(serveraddr));
@@ -100,18 +98,18 @@ extern offroad_func_result *execute_pnode(struct pnode_args *args)
 
     if (bind_status == -1)
     {
-        res = err_result(errno, "Could not bind the socket to the server address", ERROR);
-        goto return_block;
+        close(socketfd);
+        return ax_result_err(errno, "Could not bind the socket to the server address");
     }
 
-    debug_msg("Socket successfully created, waiting for connections...", INFO);
+    ax_log(INFO, "Socket successfully created, waiting for connections...");
 
     connection_status = listen(socketfd, 10);
 
     if (connection_status == -1)
     {
-        res = err_result(errno, "Could not listen to the socket", ERROR);
-        goto return_block;
+        close(socketfd);
+        return ax_result_err(errno, "Could not listen to the socket");
     }
 
     length = sizeof(client);
@@ -119,21 +117,19 @@ extern offroad_func_result *execute_pnode(struct pnode_args *args)
 
     if (connection == -1)
     {
-        res = err_result(errno, "Connection with the client could not be stablished", ERROR);
-        goto return_block;
+        close(socketfd);
+        return ax_result_err(errno, "Connection with the client could not be stablished");
     }
 
-    debug_msg("Connection accepted", INFO);
+    ax_log(INFO, "Connection accepted");
 
-    res = write_file(connection);
+    ax_result_p result = write_file(connection);
 
-    if (res != NULL && res->type == OK)
+    if (result != NULL && result->type == OK)
     {
-        free_result(&res);
-        res = execute_file(OFFROAD_P_NODE_TMP_FILE);
+        ax_free_result(result);
+        result = execute_file(OFFROAD_P_NODE_TMP_FILE);
     }
 
-return_block:
-    close(socketfd);
-    return res;
+    return result;
 }

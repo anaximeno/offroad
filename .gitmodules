@@ -1,0 +1,3 @@
+[submodule "include/ax-c-common"]
+	path = include/ax-c-common
+	url = https://github.com/anaximeno/ax-c-common.git
