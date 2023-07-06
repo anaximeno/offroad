@@ -25,23 +25,27 @@ offroad_func_result *send_file(FILE *file, int socketfd)
     while (fgets(data, OFFROAD_BUFFER_LENGHT, file) != NULL)
     {
         if (send(socketfd, data, sizeof(data), 0) == -1)
-            return create_result(1, "Error while sending the file", ERROR);
-
+            return err_result(1, "Error while sending the file", ERROR);
         memset(data, 0, OFFROAD_BUFFER_LENGHT);
     }
 
-    return create_result(0, NULL, INFO);
+    return ok_result(NULL);
 }
 
 extern offroad_func_result *execute_rnode(struct rnode_args *args)
 {
-    struct sockaddr_in client;//XXX
+    offroad_func_result *res = NULL;
+
+    struct sockaddr_in client; // XXX
     int socketfd, connection;
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socketfd == -1)
-        return create_result(1, "Error during the creation of the socket", ERROR);
+    {
+        res = err_result(1, "Error during the creation of the socket", ERROR);
+        goto return_block;
+    }
 
     struct sockaddr_in serveraddr = {
         .sin_family = AF_INET,
@@ -52,12 +56,13 @@ extern offroad_func_result *execute_rnode(struct rnode_args *args)
 
     if (connection == -1)
     {
-        close(socketfd);
-        return create_result(1, "Could not create a connection to the server", ERROR);
+        res = err_result(1, "Could not create a connection to the server", ERROR);
+        goto return_block;
     }
 
-    offroad_func_result *res = send_file(args->file, socketfd);
+    res = send_file(args->file, socketfd);
 
+return_block:
     close(socketfd);
     return res;
 }

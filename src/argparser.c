@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <getopt.h>
 
@@ -26,39 +27,42 @@ offroad_cli_parse_info *create_parse_info()
     return info;
 }
 
-bool validate_args_file(char *filename, offroad_cli_args **args)
+offroad_func_result *validate_args_file(char *filename, offroad_cli_args *args)
 {
-    if (args != NULL && *args != NULL)
+    if (args != NULL)
     {
         struct stat fs;
-
         if (stat(filename, &fs) == -1)
-            (*args)->error = "File error";
+            return err_result(errno, "File error", ERROR);
         else if (!S_ISREG(fs.st_mode))
-            (*args)->error = "File is not regular";
+            return err_result(1, "File is not regular", ERROR);
         else if (!(fs.st_mode & S_IXUSR) || !(fs.st_mode & S_IXOTH))
-            (*args)->error = "File is not executable";
+            return err_result(1, "File is not executable", ERROR);
         else
-            return true;
+            return ok_result(NULL);
     }
 
-    return false;
+    return err_result(1, "Internal Error, received null args to validate", WARNING);
 }
 
-offroad_cli_parse_info *parse_commands(int argc, char **argv, offroad_cli_args **args)
+/** Returns: "ok(offroad_cli_parse_info*)" or "err" */
+offroad_func_result *parse_commands(int argc, char **argv)
 {
+    offroad_func_result *result = NULL;
+    offroad_cli_parse_info *info = NULL;
+
     if (argc == 1)
     {
-        (*args)->error = "No arguments were provided";
-        return NULL;
+        result = err_result(1, "No arguments were provided", ERROR);
+        goto return_block;
     }
 
-    offroad_cli_parse_info *info = create_parse_info();
+    info = create_parse_info();
 
     if (info == NULL)
     {
-        (*args)->error = "Insufficient memory";
-        return NULL;
+        result = err_result(1, "Insufficient memory", CRITICAL);
+        goto return_block;
     }
 
     int c, option_index;
@@ -88,8 +92,8 @@ offroad_cli_parse_info *parse_commands(int argc, char **argv, offroad_cli_args *
             break;
 
         case 'r': /* R NODE*/
-            info->filename = optarg;
             info->is_rnode = true;
+            info->filename = optarg;
             break;
 
         case 'p': /* P NODE*/
@@ -97,89 +101,125 @@ offroad_cli_parse_info *parse_commands(int argc, char **argv, offroad_cli_args *
             break;
 
         case '?':
-        default:
-            (*args)->error = "Argument parsing error";
             break;
+
+        default:
+            free_result(&result);
+            result = err_result(1, "Argument parsing error", ERROR);
+            goto return_block;
         }
     }
 
     if (optind < argc)
+        result = err_result(1, "Received unknown arguments", ERROR);
+    else
+        result = ok_result(info);
+
+return_block:
+    if (result != NULL && result->type == ERR)
     {
-        // XXX: should improve here, the unknown arguments can be accessed
-        // using the optind variable.
-        (*args)->error = "Unknow argmuent";
+        free(info);
+        info = NULL;
     }
 
-    return info;
+    return result;
 }
 
-void process_rnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **args)
+offroad_func_result *process_rnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args *args)
 {
-    (*args)->run_type = RNODE;
+    offroad_func_result *result = NULL;
+
+    args->run_type = RNODE;
 
     if (info->host == NULL || info->port == -1)
     {
-        (*args)->error = "'--run/-r' requires '--host' and '--port' to be defined";
+        result = err_result(1, "'--run/-r' requires '--host' and '--port' to be defined", ERROR);
     }
     else
     {
-        (*args)->to.rnode.filename = info->filename;
-        (*args)->to.rnode.host = info->host;
-        (*args)->to.rnode.port = info->port;
-        (*args)->to.rnode.file = NULL;
+        args->to.rnode.filename = info->filename;
+        args->to.rnode.host = info->host;
+        args->to.rnode.port = info->port;
+        args->to.rnode.file = NULL;
 
-        if (validate_args_file((*args)->to.rnode.filename, args))
+        result = validate_args_file(args->to.rnode.filename, args);
+
+        if (result != NULL && result->type == OK)
         {
-            (*args)->to.rnode.file = fopen((*args)->to.rnode.filename, "r");
+            free_result(&result);
 
-            if ((*args)->to.rnode.file == NULL)
-                (*args)->error = "File could not be loaded";
+            args->to.rnode.file = fopen(args->to.rnode.filename, "r");
+
+            if (args->to.rnode.file == NULL)
+                result = err_result(1, "File could not be loaded", ERROR);
+            else
+                result = ok_result(NULL);
         }
     }
+
+    return result;
 }
 
-void process_pnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args **args)
+offroad_func_result *process_pnode_parse_info(offroad_cli_parse_info *info, offroad_cli_args *args)
 {
-    (*args)->run_type = PNODE;
+    args->run_type = PNODE;
 
     if (info->port == -1)
-        (*args)->error = "'--process/-p' requires '--port' to be defined";
-    else
-        (*args)->to.pnode.port = info->port;
+        return err_result(1, "'--process/-p' requires '--port' to be defined", ERROR);
+
+    args->to.pnode.port = info->port;
+    return ok_result(NULL);
 }
 
-void process_parsed_info(offroad_cli_parse_info *info, offroad_cli_args **args)
+offroad_func_result *process_parsed_info(offroad_cli_parse_info *info, offroad_cli_args *args)
 {
-    if (info != NULL && args != NULL && *args != NULL)
+    if (info != NULL && args != NULL)
     {
         if (info->is_rnode && info->is_pnode)
-            (*args)->error = "'--run/-r' and '--process/-p' should be called separetely";
+            return err_result(1, "'--run/-r' and '--process/-p' should be called separetely", ERROR);
         else if (info->is_rnode)
-            process_rnode_parse_info(info, args);
+            return process_rnode_parse_info(info, args);
         else if (info->is_pnode)
-            process_pnode_parse_info(info, args);
+            return process_pnode_parse_info(info, args);
     }
+
+    return err_result(1, "Got invalid params during the parsing of the arguments info", WARNING);
 }
 
-extern offroad_cli_args *parse_args(int argc, char **argv)
+offroad_cli_args *create_args()
 {
     offroad_cli_args *args = (offroad_cli_args *)malloc(sizeof(offroad_cli_args));
 
     if (args != NULL)
+        args->run_type = UNKNOWN;
+
+    return args;
+}
+
+extern offroad_func_result *parse_args(int argc, char **argv)
+{
+    offroad_func_result *result = parse_commands(argc, argv);
+    offroad_cli_args *args = create_args();
+
+    if (args != NULL && result != NULL)
     {
-        args->error = NULL;
-        args->run_type = NONE;
+        if (result->type == OK)
+        {
+            offroad_cli_parse_info *info = create_parse_info();
+            UNWRAP_OK_RESULT(result, info, offroad_cli_parse_info);
 
-        offroad_cli_parse_info *info = NULL;
-        info = parse_commands(argc, argv, &args);
+            result = process_parsed_info(info, args);
 
-        if (args->error == NULL && info != NULL)
-            process_parsed_info(info, &args);
+            free(info);
+            return ok_result(args);
+        }
 
-        return args;
+        return result;
     }
-
-    return NULL;
+    else
+    {
+        return err_result(1, "Insufficient memory", CRITICAL);
+    }
 }
 
 extern void free_args(offroad_cli_args **args)

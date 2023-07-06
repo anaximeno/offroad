@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "include/offroad.h"
 #include "include/argparser.h"
@@ -7,34 +8,39 @@
 
 int main(int argc, char **argv)
 {
-    int output = 0;
+    SET_PROG_NAME(argv[0]);
 
-    offroad_func_result *res = NULL;
+    int outcode = 0;
 
-    offroad_cli_args *args = parse_args(argc, argv);
+    offroad_func_result *result = parse_args(argc, argv);
 
-    if (args != NULL)
+    if (result == NULL)
     {
-        if (args->error != NULL)
-            debug_msg(args->error, ERROR);
-        else
-            res = execute_offroad(args);
+        debug_msg("Insuficient memory!", CRITICAL);
+    }
+    else if (result->type == OK)
+    {
+        offroad_cli_args *args = create_args();
+        UNWRAP_OK_RESULT(result, args, offroad_cli_args);
 
-        if (res != NULL && res->status != 0)
+        result = execute_offroad(args);
+
+        if (result != NULL && result->type == ERR)
         {
-            output = res->status;
-            debug_msg(res->error, res->dbg_level);
-
-            free(res);
-            res = NULL;
+            outcode = result->to.err.status;
+            debug_msg(result->to.err.message, result->to.err.dbg_level);
         }
 
         free_args(&args);
     }
-    else
+    else if (result->type == ERR)
     {
-        debug_msg("Insuficient memory!", CRITICAL);
+        outcode = result->to.err.status;
+        debug_msg(result->to.err.message, result->to.err.dbg_level);
     }
 
-    return output;
+    if (result != NULL)
+        free_result(&result);
+
+    return outcode;
 }

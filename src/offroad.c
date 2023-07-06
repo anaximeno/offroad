@@ -9,18 +9,20 @@
 
 offroad_func_result *execute_offroad(offroad_cli_args *args)
 {
-    if (args->error != NULL)
-        return create_result(1, args->error, ERROR);
-
-    switch (args->run_type)
+    if (args != NULL)
     {
-    case RNODE:
-        return execute_rnode(&args->to.rnode);
+        switch (args->run_type)
+        {
+        case RNODE:
+            return execute_rnode(&args->to.rnode);
 
-    case PNODE:
-        return execute_pnode(&args->to.pnode);
+        case PNODE:
+            return execute_pnode(&args->to.pnode);
 
-    default:
-        return create_result(1, "Unknown run type", ERROR);
+        default:
+            return err_result(1, "Internal error, run type unknown", WARNING);
+        }
     }
+
+    return err_result(1, "Internal error, got null 'args'", WARNING);
 }

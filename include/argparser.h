@@ -17,22 +17,22 @@ typedef struct offroad_cli_args
         struct rnode_args rnode;
         struct pnode_args pnode;
     } to;
-
-    char *error;
 } offroad_cli_args;
 
 typedef struct offroad_cli_parse_info
 {
     bool is_rnode;
     bool is_pnode;
-    char* filename;
-    char* host;
+    char *filename;
+    char *host;
     int port;
 } offroad_cli_parse_info;
 
-
 /** Returns the command line arguments for the program. */
-offroad_cli_args *parse_args(int argc, char **argv);
+offroad_func_result *parse_args(int argc, char **argv);
+
+/** Used to create args. */
+offroad_cli_args *create_args();
 
 /** Securely frees the args variable. */
 void free_args(offroad_cli_args **args);
