@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -26,7 +27,7 @@ offroad_func_result *send_file(FILE *file, int socketfd)
         if (send(socketfd, data, sizeof(data), 0) == -1)
             return create_result(1, "Error while sending the file", ERROR);
 
-        bzero(data, OFFROAD_BUFFER_LENGHT);
+        memset(data, 0, OFFROAD_BUFFER_LENGHT);
     }
 
     return create_result(0, NULL, INFO);
@@ -34,7 +35,7 @@ offroad_func_result *send_file(FILE *file, int socketfd)
 
 extern offroad_func_result *execute_rnode(struct rnode_args *args)
 {
-    struct sockaddr_in serveraddr, client;
+    struct sockaddr_in client;//XXX
     int socketfd, connection;
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -42,11 +43,12 @@ extern offroad_func_result *execute_rnode(struct rnode_args *args)
     if (socketfd == -1)
         return create_result(1, "Error during the creation of the socket", ERROR);
 
-    serveraddr.sin_family = AF_INET;
-    serveraddr.sin_addr.s_addr = inet_addr(args->host);
-    serveraddr.sin_port = htons(args->port);
+    struct sockaddr_in serveraddr = {
+        .sin_family = AF_INET,
+        .sin_addr.s_addr = inet_addr(args->host),
+        .sin_port = htons(args->port)};
 
-    connection = connect(socketfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr));
+    connection = connect(socketfd, (const struct sockaddr *)&serveraddr, sizeof(serveraddr));
 
     if (connection == -1)
     {

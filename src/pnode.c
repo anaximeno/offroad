@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -34,7 +35,8 @@ offroad_func_result *write_file(int socketfd)
                 break;
 
             fprintf(file, "%s", buffer);
-            bzero(buffer, OFFROAD_BUFFER_LENGHT);
+
+            memset(buffer, 0, OFFROAD_BUFFER_LENGHT);
         }
 
         fclose(file);
@@ -48,7 +50,7 @@ offroad_func_result *write_file(int socketfd)
 
 extern offroad_func_result *execute_pnode(struct pnode_args *args)
 {
-    struct sockaddr_in serveraddr, client;
+    struct sockaddr_in client;
     int socketfd, connection, bind_status, connection_status;
     socklen_t length;
 
@@ -57,13 +59,14 @@ extern offroad_func_result *execute_pnode(struct pnode_args *args)
     if (socketfd == -1)
         return create_result(1, "Could not create the socket", ERROR);
 
-    bzero(&serveraddr, sizeof(serveraddr));
+    struct sockaddr_in serveraddr = {
+        .sin_addr.s_addr = htonl(INADDR_ANY),
+        .sin_port = htons(args->port),
+        .sin_family = AF_INET};
 
-    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serveraddr.sin_port = htons(args->port);
-    serveraddr.sin_family = AF_INET;
+    memset(&serveraddr, 0, sizeof(serveraddr));
 
-    bind_status = bind(socketfd, (struct socketaddr *)&serveraddr, sizeof(serveraddr));
+    bind_status = bind(socketfd, (const struct sockaddr *)&serveraddr, sizeof(serveraddr));
 
     if (bind_status == -1)
     {
@@ -80,7 +83,7 @@ extern offroad_func_result *execute_pnode(struct pnode_args *args)
     }
 
     length = sizeof(client);
-    connection = accept(socketfd, (struct socketaddr *)&client, &length);
+    connection = accept(socketfd, (struct sockaddr *)&client, &length);
 
     if (connection == -1)
     {
