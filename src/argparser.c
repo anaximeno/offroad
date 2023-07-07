@@ -73,7 +73,7 @@ ax_result_p parse_commands_info(int argc, char **argv)
 
     static struct option long_options[] = {
         {"run", required_argument, 0, 'r'},
-        {"proccess", no_argument, 0, 0},
+        {"process", no_argument, 0, 0},
         {"port", required_argument, 0, 0},
         {"host", required_argument, 0, 0}};
 
@@ -93,7 +93,7 @@ ax_result_p parse_commands_info(int argc, char **argv)
                 info->port = atoi(optarg);
             else if (strcmp(long_options[option_index].name, "host") == 0)
                 info->host = optarg;
-            else if (strcmp(long_options[option_index].name, "proccess") == 0)
+            else if (strcmp(long_options[option_index].name, "process") == 0)
                 info->is_pnode = true;
             break;
 
