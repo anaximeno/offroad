@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
     int outcode = 0;
 
-    ax_result_t *result = parse_args(argc, argv);
+    ax_result_p result = parse_args(argc, argv);
 
     if (result == NULL)
     {

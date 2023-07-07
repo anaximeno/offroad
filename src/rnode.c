@@ -24,22 +24,28 @@ ax_result_p send_file(FILE *file, int socketfd)
 {
     char data[OFFROAD_BUFFER_LENGHT] = {0};
 
+    ax_log(INFO, "Sending the file to the server...");
     while (fgets(data, OFFROAD_BUFFER_LENGHT, file) != NULL)
     {
         if (send(socketfd, data, sizeof(data), 0) == -1)
             return ax_result_err(1, "Error while sending the file");
         memset(data, 0, OFFROAD_BUFFER_LENGHT);
     }
+    ax_log(INFO, "File sent.");
 
     return ax_result_ok(NULL);
 }
 
 extern ax_result_p execute_rnode(struct rnode_args *args)
 {
-    struct sockaddr_in client; // XXX
+    // XXX: will be used for bidirectional
+    // communication
+    struct sockaddr_in client;
     int socketfd, connection;
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    ax_log(INFO, "Creating a socket for the connection...");
 
     if (socketfd == -1)
         return ax_result_err(1, "Error during the creation of the socket");
@@ -49,6 +55,8 @@ extern ax_result_p execute_rnode(struct rnode_args *args)
         .sin_addr.s_addr = inet_addr(args->host),
         .sin_port = htons(args->port)};
 
+
+    ax_log(INFO, "Trying to connect to the server...");
     connection = connect(socketfd, (const struct sockaddr *)&serveraddr, sizeof(serveraddr));
 
     if (connection == -1)
