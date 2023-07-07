@@ -102,7 +102,10 @@ extern ax_result_p execute_pnode(struct pnode_args *args)
         return ax_result_err(errno, "Could not bind the socket to the server address");
     }
 
-    ax_log(INFO, "Socket successfully created, waiting for connections...");
+    char message[OFFROAD_BUFFER_LENGHT] = {0};
+
+    sprintf(message, "Socket successfully created at the port = %d", args->port);
+    ax_log(INFO, message);
 
     connection_status = listen(socketfd, 10);
 

@@ -10,8 +10,6 @@
 
 int main(int argc, char **argv)
 {
-    SET_PROG_NAME(argv[0]);
-
     int outcode = 0;
 
     ax_result_t *result = parse_args(argc, argv);
@@ -24,7 +22,9 @@ int main(int argc, char **argv)
     {
         offroad_cli_args *args = axunwrap_ok(result, offroad_cli_args);
         ax_free_result(&result);
+
         result = execute_offroad(args);
+
         free_args(&args);
     }
 

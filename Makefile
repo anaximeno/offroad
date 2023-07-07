@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -Wall -fPIC -g
 OUT = offroad
 
-SRC_FILES = src/argparser.c src/common.c src/offroad.c src/pnode.c src/rnode.c
-OBJS = argparser.o common.o offroad.o pnode.o rnode.o
+SRC_FILES = src/argparser.c src/offroad.c src/pnode.c src/rnode.c
+OBJS = argparser.o offroad.o pnode.o rnode.o
 
 AX_C_COMMON_OBJS = include/ax-c-common/ax-log.o include/ax-c-common/ax-result.o
 
