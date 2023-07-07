@@ -23,9 +23,9 @@ int main(int argc, char **argv)
     else if (result->type == OK)
     {
         offroad_cli_args *args = axunwrap_ok(result, offroad_cli_args);
-        result = ax_free_result(result);
+        ax_free_result(result);
         result = execute_offroad(args);
-        free_args(args); // XXX: memcpy problem
+        free_args(args);
     }
 
     if (result != NULL && result->type == ERR)
