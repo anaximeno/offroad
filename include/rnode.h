@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "ax-c-common/include/ax-c-common.h"
-#include "common.h"
 
 struct rnode_args
 {

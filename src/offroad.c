@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/offroad.h"
-#include "../include/common.h"
 #include "../include/argparser.h"
 #include "../include/pnode.h"
 #include "../include/rnode.h"

@@ -3,11 +3,17 @@
 
 #include <stdbool.h>
 
-#include "common.h"
 #include "rnode.h"
 #include "pnode.h"
 
 #include "ax-c-common/include/ax-c-common.h"
+
+typedef enum offroad_run_type
+{
+    UNKNOWN,
+    PNODE,
+    RNODE
+} offroad_run_type;
 
 /** Defines the spected arguments for the program. */
 typedef struct offroad_cli_args

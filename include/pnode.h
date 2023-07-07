@@ -2,7 +2,6 @@
 #define _OFFROAD_P_NODE
 
 #include "ax-c-common/include/ax-c-common.h"
-#include "common.h"
 
 #define OFFROAD_P_NODE_TMP_FILE "runner"
 #define OFFROAD_P_NODE_DEFAULT_HOST "127.0.0.1"
