@@ -66,10 +66,20 @@ ax_result_p execute_file(const char *filename)
     else if (chmod(filename, S_IRWXU | S_IROTH) == -1)
         return ax_result_err(errno, "Can't set execute permission on the run file");
 
-    ax_log(INFO, "Executing the received file...");
-    // TODO
+    char *path = axcallocate(strlen(filename) + 2, char);
+    char *log_info = axcallocate(strlen(filename) + 64, char);
 
-    // execv(filename) // TODO
+    sprintf(path, "./%s", filename);
+    sprintf(log_info, "Running received file at './%s' ...\n", filename);
+    ax_log(INFO, log_info);
+
+    int result = execl(path, filename, NULL);
+
+    axfree(path);
+    axfree(log_info);
+
+    if (result == -1)
+        return ax_result_err(1, "Error while trying to running the file");
 
     return ax_result_ok(NULL);
 }
