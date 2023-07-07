@@ -17,4 +17,5 @@ $(AX_C_COMMON_OBJS):
 	cd include/ax-c-common/ && $(MAKE)
 
 clean:
-	-rm *.o $(OUT) $(AX_C_COMMON_OBJS)
+	-cd include/ax-c-common/ && $(MAKE) clean
+	-rm *.o $(OUT)
