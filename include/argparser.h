@@ -37,6 +37,6 @@ ax_result_p parse_args(int argc, char **argv);
 offroad_cli_args *create_args();
 
 /** Securely frees the args variable. */
-void *free_args(offroad_cli_args *args);
+void free_args(offroad_cli_args **args);
 
 #endif

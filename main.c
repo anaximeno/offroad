@@ -23,9 +23,9 @@ int main(int argc, char **argv)
     else if (result->type == OK)
     {
         offroad_cli_args *args = axunwrap_ok(result, offroad_cli_args);
-        ax_free_result(result);
+        ax_free_result(&result);
         result = execute_offroad(args);
-        free_args(args);
+        free_args(&args);
     }
 
     if (result != NULL && result->type == ERR)
@@ -34,6 +34,6 @@ int main(int argc, char **argv)
         ax_log(ERROR, result->to.err.message);
     }
 
-    ax_free_result(result);
+    ax_free_result(&result);
     return outcode;
 }

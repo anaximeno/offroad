@@ -127,7 +127,7 @@ extern ax_result_p execute_pnode(struct pnode_args *args)
 
     if (result != NULL && result->type == OK)
     {
-        ax_free_result(result);
+        ax_free_result(&result);
         result = execute_file(OFFROAD_P_NODE_TMP_FILE);
     }
 

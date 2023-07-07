@@ -51,7 +51,7 @@ ax_result_p validate_args_file(char *filename, offroad_cli_args *args)
         else if (!(fs.st_mode & S_IXUSR) || !(fs.st_mode & S_IXOTH))
             return ax_result_err(1, "File is not executable");
         else
-            return ax_result_ok(args);
+            return ax_result_ok(NULL);
     }
 
     return ax_result_err(1, "Internal Error, received null args to validate");
@@ -74,7 +74,7 @@ ax_result_p parse_commands_info(int argc, char **argv)
 
     static struct option long_options[] = {
         {"run", required_argument, 0, 'r'},
-        {"process", no_argument, 0, 'p'},
+        {"proccess", no_argument, 0, 0},
         {"port", required_argument, 0, 0},
         {"host", required_argument, 0, 0}};
 
@@ -82,7 +82,7 @@ ax_result_p parse_commands_info(int argc, char **argv)
     {
         option_index = 0;
 
-        c = getopt_long(argc, argv, "pr:", long_options, &option_index);
+        c = getopt_long(argc, argv, "r:", long_options, &option_index);
 
         if (c == -1)
             break;
@@ -94,15 +94,13 @@ ax_result_p parse_commands_info(int argc, char **argv)
                 info->port = atoi(optarg);
             else if (strcmp(long_options[option_index].name, "host") == 0)
                 info->host = optarg;
+            else if (strcmp(long_options[option_index].name, "proccess") == 0)
+                info->is_pnode = true;
             break;
 
         case 'r': /* R NODE*/
             info->is_rnode = true;
             info->filename = optarg;
-            break;
-
-        case 'p': /* P NODE*/
-            info->is_pnode = true;
             break;
 
         case '?':
@@ -142,7 +140,7 @@ ax_result_p process_rnode_info(offroad_cli_parse_info *info)
 
         if (result != NULL && result->type == OK)
         {
-            result = ax_free_result(result);
+            ax_free_result(&result);
             args->to.rnode.file = fopen(args->to.rnode.filename, "r");
 
             if (args->to.rnode.file == NULL)
@@ -192,21 +190,20 @@ extern ax_result_p parse_args(int argc, char **argv)
     if (result != NULL && result->type == OK)
     {
         info = axunwrap_ok(result, offroad_cli_parse_info);
-        ax_free_result(result);
-        result = parse_args_from_info(info);
+        ax_free_result(&result);
+        return parse_args_from_info(info);
     }
 
     return result;
 }
 
-extern void *free_args(offroad_cli_args *args)
+extern void free_args(offroad_cli_args **args)
 {
-    if (args != NULL)
+    if (args != NULL && *args)
     {
-        if (args->run_type == RNODE && args->to.rnode.file != NULL)
-            fclose(args->to.rnode.file);
+        if ((*args)->run_type == RNODE && (*args)->to.rnode.file != NULL)
+            fclose((*args)->to.rnode.file);
 
-        free(args);
+        free((*args));
     }
-    return NULL;
 }
