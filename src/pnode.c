@@ -14,7 +14,7 @@
 #include "../include/pnode.h"
 #include "../include/offroad.h"
 
-#include "../include/ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 extern void free_pnode_args(struct pnode_args **args)
 {

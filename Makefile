@@ -5,7 +5,10 @@ OUT = offroad
 SRC_FILES = src/argparser.c src/offroad.c src/pnode.c src/rnode.c
 OBJS = argparser.o offroad.o pnode.o rnode.o
 
-AX_C_COMMON_OBJS = include/ax-c-common/ax-log.o include/ax-c-common/ax-result.o
+AX_C_COMMON_PATH = ax-c-common
+AX_C_COMMON_OBJS = $(AX_C_COMMON_PATH)/ax-log.o \
+				   $(AX_C_COMMON_PATH)/ax-result.o
+
 
 $(OUT): main.c $(OBJS) $(AX_C_COMMON_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -13,9 +16,9 @@ $(OUT): main.c $(OBJS) $(AX_C_COMMON_OBJS)
 $(OBJS): $(SRC_FILES)
 	$(CC) $(CFLAGS) $^ -c
 
-$(AX_C_COMMON_OBJS):
-	cd include/ax-c-common/ && $(MAKE)
+$(AX_C_COMMON_OBJS): $(AX_C_COMMON_PATH)
+	cd $(AX_C_COMMON_PATH) && $(MAKE)
 
 clean:
-	-cd include/ax-c-common/ && $(MAKE) clean
+	-cd $(AX_C_COMMON_PATH) && $(MAKE) clean
 	-rm *.o $(OUT)

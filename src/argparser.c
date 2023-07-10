@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <getopt.h>
 
-#include "../include/ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 #include "../include/argparser.h"
 #include "../include/pnode.h"

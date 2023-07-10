@@ -3,7 +3,7 @@
 
 #include "argparser.h"
 
-#include "ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 #define OFFROAD_BUFFER_LENGHT 1024
 #define OFFROAD_DEFAULT_HOST "127.0.0.1"

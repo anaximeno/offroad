@@ -9,7 +9,7 @@
 #include "../include/rnode.h"
 #include "../include/offroad.h"
 
-#include "../include/ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 extern void free_rnode_args(struct rnode_args **args)
 {

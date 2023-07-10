@@ -6,7 +6,7 @@
 #include "rnode.h"
 #include "pnode.h"
 
-#include "ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 typedef enum offroad_run_type
 {

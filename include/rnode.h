@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 struct rnode_args
 {

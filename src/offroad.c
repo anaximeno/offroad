@@ -5,7 +5,7 @@
 #include "../include/pnode.h"
 #include "../include/rnode.h"
 
-#include "../include/ax-c-common/include/ax-c-common.h"
+#include "../ax-c-common/ax-c-common.h"
 
 ax_result(NULL) execute_offroad(offroad_cli_args *args)
 {

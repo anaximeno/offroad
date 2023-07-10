@@ -4,8 +4,7 @@
 
 #include "include/offroad.h"
 #include "include/argparser.h"
-
-#include "include/ax-c-common/include/ax-c-common.h"
+#include "ax-c-common/ax-c-common.h"
 
 int main(int argc, char **argv)
 {
