@@ -200,7 +200,10 @@ extern void free_args(offroad_cli_args **args)
     if (args != NULL && *args)
     {
         if ((*args)->run_type == RNODE && (*args)->to.rnode.file != NULL)
+        {
             fclose((*args)->to.rnode.file);
+            (*args)->to.rnode.file = NULL;
+        }
         axfree(*args);
     }
 }

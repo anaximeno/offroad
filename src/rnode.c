@@ -13,11 +13,15 @@
 
 extern void free_rnode_args(struct rnode_args **args)
 {
-    if ((*args)->file != NULL)
-        fclose((*args)->file);
-
-    free(*args);
-    *args = NULL;
+    if (args != NULL && *args != NULL)
+    {
+        if ((*args)->file != NULL)
+        {
+            fclose((*args)->file);
+            (*args)->file = NULL;
+        }
+        axfree(*args);
+    }
 }
 
 ax_result(NULL) send_file(FILE *file, int socketfd)
@@ -54,7 +58,6 @@ extern ax_result(NULL) execute_rnode(struct rnode_args *args)
         .sin_family = AF_INET,
         .sin_addr.s_addr = inet_addr(args->host),
         .sin_port = htons(args->port)};
-
 
     ax_log(INFO, "Trying to connect to the server...");
     connection = connect(socketfd, (const struct sockaddr *)&serveraddr, sizeof(serveraddr));

@@ -18,8 +18,7 @@
 
 extern void free_pnode_args(struct pnode_args **args)
 {
-    free(*args);
-    *args = NULL;
+    axfree(*args);
 }
 
 ax_result(NULL) write_file(int socketfd)
