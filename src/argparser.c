@@ -38,7 +38,7 @@ offroad_cli_args *create_args(offroad_run_type run_type)
     return args;
 }
 
-ax_result_p validate_args_file(char *filename, offroad_cli_args *args)
+ax_result(NULL) validate_args_file(char *filename, offroad_cli_args *args)
 {
     if (args != NULL)
     {
@@ -55,9 +55,8 @@ ax_result_p validate_args_file(char *filename, offroad_cli_args *args)
 
     return ax_result_err(1, "Internal Error, received null args to validate");
 }
-
 /** Returns: "ok(offroad_cli_parse_info*)" or "err" */
-ax_result_p parse_commands_info(int argc, char **argv)
+ax_result(offroad_cli_parse_info) parse_commands_info(int argc, char **argv)
 {
     offroad_cli_parse_info *info = NULL;
 
@@ -106,21 +105,21 @@ ax_result_p parse_commands_info(int argc, char **argv)
             break;
 
         default:
-            free(info);
+            axfree(info);
             return ax_result_err(1, "Argument parsing error");
         }
     }
 
     if (optind < argc)
     {
-        free(info);
+        axfree(info);
         return ax_result_err(ERROR, "Received unknown arguments");
     }
 
     return ax_result_ok(info);
 }
 
-ax_result_p process_rnode_info(offroad_cli_parse_info *info)
+ax_result(offroad_cli_args) process_rnode_info(offroad_cli_parse_info *info)
 {
     offroad_cli_args *args = create_args(RNODE);
 
@@ -152,7 +151,7 @@ ax_result_p process_rnode_info(offroad_cli_parse_info *info)
     }
 }
 
-ax_result_p process_pnode_info(offroad_cli_parse_info *info)
+ax_result(offroad_cli_args) process_pnode_info(offroad_cli_parse_info *info)
 {
     offroad_cli_args *args = create_args(PNODE);
 
@@ -166,7 +165,7 @@ ax_result_p process_pnode_info(offroad_cli_parse_info *info)
     return ax_result_ok(args);
 }
 
-ax_result_p parse_args_from_info(offroad_cli_parse_info *info)
+ax_result(offroad_cli_args) parse_args_from_info(offroad_cli_parse_info *info)
 {
     if (info != NULL)
     {
@@ -181,7 +180,7 @@ ax_result_p parse_args_from_info(offroad_cli_parse_info *info)
     return ax_result_err(1, "Got invalid params during the parsing of the arguments info");
 }
 
-extern ax_result_p parse_args(int argc, char **argv)
+extern ax_result(offroad_cli_args) parse_args(int argc, char **argv)
 {
     offroad_cli_parse_info *info = NULL;
     ax_result_p result = parse_commands_info(argc, argv);
@@ -202,7 +201,6 @@ extern void free_args(offroad_cli_args **args)
     {
         if ((*args)->run_type == RNODE && (*args)->to.rnode.file != NULL)
             fclose((*args)->to.rnode.file);
-
-        free((*args));
+        axfree(*args);
     }
 }

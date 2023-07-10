@@ -20,7 +20,7 @@ extern void free_rnode_args(struct rnode_args **args)
     *args = NULL;
 }
 
-ax_result_p send_file(FILE *file, int socketfd)
+ax_result(NULL) send_file(FILE *file, int socketfd)
 {
     char data[OFFROAD_BUFFER_LENGHT] = {0};
 
@@ -36,7 +36,7 @@ ax_result_p send_file(FILE *file, int socketfd)
     return ax_result_ok(NULL);
 }
 
-extern ax_result_p execute_rnode(struct rnode_args *args)
+extern ax_result(NULL) execute_rnode(struct rnode_args *args)
 {
     // XXX: will be used for bidirectional
     // communication
@@ -65,7 +65,7 @@ extern ax_result_p execute_rnode(struct rnode_args *args)
         return ax_result_err(1, "Could not create a connection to the server");
     }
 
-    ax_result_p result = send_file(args->file, socketfd);
+    ax_result(NULL) result = send_file(args->file, socketfd);
 
     close(socketfd);
     return result;

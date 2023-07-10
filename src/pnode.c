@@ -22,7 +22,7 @@ extern void free_pnode_args(struct pnode_args **args)
     *args = NULL;
 }
 
-ax_result_p write_file(int socketfd)
+ax_result(NULL) write_file(int socketfd)
 {
     char buffer[OFFROAD_BUFFER_LENGHT] = {0};
     int n;
@@ -55,7 +55,7 @@ ax_result_p write_file(int socketfd)
     }
 }
 
-ax_result_p execute_file(const char *filename)
+ax_result(NULL) execute_file(const char *filename)
 {
     struct stat fs;
 
@@ -72,11 +72,10 @@ ax_result_p execute_file(const char *filename)
     sprintf(path, "./%s", filename);
     sprintf(log_info, "Running received file at './%s' ...\n", filename);
     ax_log(INFO, log_info);
+    axfree(log_info);
 
     int result = execl(path, filename, NULL);
-
     axfree(path);
-    axfree(log_info);
 
     if (result == -1)
         return ax_result_err(1, "Error while trying to running the file");
@@ -84,7 +83,7 @@ ax_result_p execute_file(const char *filename)
     return ax_result_ok(NULL);
 }
 
-extern ax_result_p execute_pnode(struct pnode_args *args)
+extern ax_result(NULL) execute_pnode(struct pnode_args *args)
 {
     struct sockaddr_in client, serveraddr;
     int socketfd, connection, bind_status, connection_status;

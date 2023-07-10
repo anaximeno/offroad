@@ -7,7 +7,7 @@
 
 #include "../include/ax-c-common/include/ax-c-common.h"
 
-ax_result_p execute_offroad(offroad_cli_args *args)
+ax_result(NULL) execute_offroad(offroad_cli_args *args)
 {
     if (args != NULL)
     {
