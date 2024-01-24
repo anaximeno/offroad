@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 
     if (result == NULL)
     {
-        ax_log(WARN, "Insuficient memory!");
+        ax_named_log("offroad", WARN, "Insuficient memory!");
     }
     else if (result->type == OK)
     {
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     if (result != NULL && result->type == ERR)
     {
         outcode = result->to.err.errnum;
-        ax_log(ERROR, result->to.err.message);
+        ax_named_log("offroad", ERROR, result->to.err.message);
     }
 
     ax_free_result(&result);

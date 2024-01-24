@@ -30,7 +30,7 @@ ax_result(NULL) write_file(int socketfd)
 
     if (file != NULL)
     {
-        ax_log(INFO, "Receiving the file...");
+        ax_named_log("offroad", INFO, "Receiving the file...");
 
         while (true)
         {
@@ -45,7 +45,7 @@ ax_result(NULL) write_file(int socketfd)
         }
 
         fclose(file);
-        ax_log(INFO, "File received");
+        ax_named_log("offroad", INFO, "File received");
         return ax_result_ok(NULL);
     }
     else
@@ -70,7 +70,7 @@ ax_result(NULL) execute_file(const char *filename)
 
     sprintf(path, "./%s", filename);
     sprintf(log_info, "Running received file at './%s' ...\n", filename);
-    ax_log(INFO, log_info);
+    ax_named_log("offroad", INFO, log_info);
     axfree(log_info);
 
     int result = execl(path, filename, NULL);
@@ -90,7 +90,7 @@ extern ax_result(NULL) execute_pnode(struct pnode_args *args)
 
     socketfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    ax_log(INFO, "Initializing the socket...");
+    ax_named_log("offroad", INFO, "Initializing the socket...");
 
     if (socketfd == -1)
         return ax_result_err(errno, "Could not create the socket");
@@ -113,7 +113,7 @@ extern ax_result(NULL) execute_pnode(struct pnode_args *args)
     char message[OFFROAD_BUFFER_LENGHT] = {0};
 
     sprintf(message, "Socket successfully created at the port = %d", args->port);
-    ax_log(INFO, message);
+    ax_named_log("offroad", INFO, message);
 
     connection_status = listen(socketfd, 10);
 
@@ -132,7 +132,7 @@ extern ax_result(NULL) execute_pnode(struct pnode_args *args)
         return ax_result_err(errno, "Connection with the client could not be stablished");
     }
 
-    ax_log(INFO, "Connection accepted");
+    ax_named_log("offroad", INFO, "Connection accepted");
 
     ax_result_p result = write_file(connection);
 
